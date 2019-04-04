@@ -4,6 +4,9 @@ import numpy as np
 import torch
 import torch.utils.data.sampler as sampler
 from torch.utils.data import Dataset
+from random import shuffle
+
+from hw1.datasets import SubsetDataset
 
 
 def create_train_validation_loaders(dataset: Dataset, validation_ratio,
@@ -29,7 +32,25 @@ def create_train_validation_loaders(dataset: Dataset, validation_ratio,
     #    from the dataset.
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    valid_size = int(len(dataset) * validation_ratio)
+    train_size = len(dataset) - valid_size
+
+    indices = list(range(len(dataset)))
+    shuffle(indices)
+    valid_idx = indices[:valid_size]
+    train_idx = indices[valid_size:valid_size + train_size]
+
+    valid_sampler = torch.utils.data.SubsetRandomSampler(valid_idx)
+    train_sampler = torch.utils.data.SubsetRandomSampler(train_idx)
+
+    dl_valid = torch.utils.data.DataLoader(
+        dataset, batch_size=batch_size, sampler=valid_sampler,
+        num_workers=num_workers
+    )
+    dl_train = torch.utils.data.DataLoader(
+        dataset, batch_size=batch_size, sampler=train_sampler,
+        num_workers=num_workers
+    )
     # ========================
 
     return dl_train, dl_valid
