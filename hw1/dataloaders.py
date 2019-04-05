@@ -6,8 +6,6 @@ import torch.utils.data.sampler as sampler
 from torch.utils.data import Dataset
 from random import shuffle
 
-from hw1.datasets import SubsetDataset
-
 
 def create_train_validation_loaders(dataset: Dataset, validation_ratio,
                                     batch_size=100, num_workers=2):

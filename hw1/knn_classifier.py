@@ -48,12 +48,14 @@ class KNNClassifier(object):
         y_pred = torch.zeros(n_test, dtype=torch.int64)
 
         for i in range(n_test):
-            # TODO:
             # - Find indices of k-nearest neighbors of test sample i
             # - Set y_pred[i] to the most common class among them
 
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            cur_dists = dist_matrix[:, i]
+            _, top_idx = torch.topk(cur_dists, self.k, largest=False)
+            top_classes = self.y_train[top_idx]
+            y_pred[i] = torch.mode(top_classes)[0].item()
             # ========================
 
         return y_pred
@@ -68,7 +70,6 @@ class KNNClassifier(object):
             between training sample i and test sample j.
         """
 
-        # TODO: Implement L2-distance calculation as efficiently as possible.
         # Notes:
         # - Use only basic pytorch tensor operations, no external code.
         # - No credit will be given for an implementation with two explicit
@@ -78,9 +79,17 @@ class KNNClassifier(object):
         # - Full credit will be given for a fully vectorized implementation
         #   (zero explicit loops). Hint: Open the expression (a-b)^2.
 
-        dists = torch.tensor([])
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        # column vector - a^2, train squared summed.
+        a_2 = self.x_train.pow(2).sum(dim=1).view(-1, 1)
+        # matrix - a * b, train mul by test (each row by entire matrix).
+        ab = self.x_train.matmul(x_test.t())
+        # row vector - b^2, test squared summed.
+        b_2 = x_test.pow(2).sum(dim=1)
+
+        # (a - b)^2 = a^2 - 2ab + b^2.
+        dists = (a_2 - 2 * ab + b_2)
+        dists.sqrt_()
         # ========================
 
         return dists
@@ -101,7 +110,7 @@ def accuracy(y: Tensor, y_pred: Tensor):
 
     accuracy = None
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    accuracy = y[y == y_pred].size(0) / y.size(0)
     # ========================
 
     return accuracy
