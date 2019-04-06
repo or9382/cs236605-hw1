@@ -39,7 +39,6 @@ class KNNClassifier(object):
         # Calculate distances between training and test samples
         dist_matrix = self.calc_distances(x_test)
 
-        # TODO: Implement k-NN class prediction based on distance matrix.
         # For each training sample we'll look for it's k-nearest neighbors.
         # Then we'll predict the label of that sample to be the majority
         # label of it's nearest neighbors.
@@ -106,11 +105,10 @@ def accuracy(y: Tensor, y_pred: Tensor):
     assert y.shape == y_pred.shape
     assert y.dim() == 1
 
-    # TODO: Calculate prediction accuracy. Don't use an explicit loop.
 
     accuracy = None
     # ====== YOUR CODE: ======
-    accuracy = y[y == y_pred].size(0) / y.size(0)
+    accuracy = (y == y_pred).sum().item() / len(y)
     # ========================
 
     return accuracy

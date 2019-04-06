@@ -18,7 +18,6 @@ class LinearClassifier(object):
         self.n_features = n_features
         self.n_classes = n_classes
 
-        # TODO: Create weights tensor of appropriate dimensions
         # Initialize it from a normal dist with zero mean and the given std.
 
         # ====== YOUR CODE: ======
@@ -37,7 +36,6 @@ class LinearClassifier(object):
                 per sample.
         """
 
-        # TODO: Implement linear prediction.
         # Calculate the score for each class using the weights and
         # return the class y_pred with the highest score.
 
@@ -59,14 +57,13 @@ class LinearClassifier(object):
         :return: The accuracy in percent.
         """
 
-        # TODO: calculate accuracy of prediction.
         # Use the predict function above and compare the predicted class
         # labels to the ground truth labels to obtain the accuracy (in %).
         # Do not use an explicit loop.
 
         acc = None
         # ====== YOUR CODE: ======
-        acc = y[y == y_pred].size(0) / y.size(0)
+        acc = (y == y_pred).sum().item() / len(y)
         # ========================
 
         return acc * 100
