@@ -140,7 +140,14 @@ def find_best_k(ds_train: Dataset, k_choices, num_folds):
         # different split each iteration), or implement something else.
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        curr_accs = []
+        for _ in range(num_folds):
+            train, validation = dataloaders.create_train_validation_loaders(ds_train, 1.0 / num_folds)
+            model.train(train)
+            x_valid, y_valid = dataloader_utils.flatten(validation)
+            curr_accs.append(accuracy(y_valid, model.predict(x_valid)))
+
+        accuracies.append(curr_accs)
         # ========================
 
     best_k_idx = np.argmax([np.mean(acc) for acc in accuracies])
