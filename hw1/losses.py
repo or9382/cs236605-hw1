@@ -55,7 +55,8 @@ class SVMHingeLoss(ClassifierLoss):
 
         loss = None
         # ====== YOUR CODE: ======
-        loss_matrix = max(x_scores - x_scores[:, y].view(-1, 1) + self.delta, 0).type(torch.float)
+        loss_matrix = max(x_scores - x_scores[:, y].view(-1, 1) + self.delta, 0)
+        loss_matrix[:, y] *= 0  # make sure to disregard the corrct class
         loss = torch.mean(torch.sum(loss_matrix, dim=1))
         # ========================
 
