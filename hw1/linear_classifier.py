@@ -21,9 +21,8 @@ class LinearClassifier(object):
         # TODO: Create weights tensor of appropriate dimensions
         # Initialize it from a normal dist with zero mean and the given std.
 
-        self.weights = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        self.weights = torch.normal(torch.zeros((n_features, n_classes)), weight_std)
         # ========================
 
     def predict(self, x: Tensor):
@@ -44,7 +43,8 @@ class LinearClassifier(object):
 
         y_pred, class_scores = None, None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        class_scores = torch.matmul(x, self.weights)
+        y_pred = torch.argmax(class_scores, dim=1)
         # ========================
 
         return y_pred, class_scores
@@ -66,7 +66,7 @@ class LinearClassifier(object):
 
         acc = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        acc = y[y == y_pred].size(0) / y.size(0)
         # ========================
 
         return acc * 100
@@ -76,14 +76,12 @@ class LinearClassifier(object):
               dl_valid: DataLoader,
               loss_fn: ClassifierLoss,
               learn_rate=0.1, weight_decay=0.001, max_epochs=100):
-
         Result = namedtuple('Result', 'accuracy loss')
         train_res = Result(accuracy=[], loss=[])
         valid_res = Result(accuracy=[], loss=[])
 
         print('Training', end='')
         for epoch_idx in range(max_epochs):
-
             # TODO: Implement model training loop.
             # At each epoch, evaluate the model on the entire training set
             # (batch by batch) and update the weights.
