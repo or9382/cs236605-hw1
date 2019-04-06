@@ -55,7 +55,8 @@ class SVMHingeLoss(ClassifierLoss):
 
         loss = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        loss_matrix = max(x_scores - x_scores[:, y].view(-1, 1) + self.delta, 0).type(torch.float)
+        loss = torch.mean(torch.sum(loss_matrix, dim=1))
         # ========================
 
         # TODO: Save what you need for gradient calculation in self.grad_ctx
