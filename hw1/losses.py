@@ -42,7 +42,6 @@ class SVMHingeLoss(ClassifierLoss):
         assert x_scores.shape[0] == y.shape[0]
         assert y.dim() == 1
 
-        # TODO: Implement SVM loss calculation based on the hinge-loss formula.
         #
         # Notes:
         # - Use only basic pytorch tensor operations, no external code.
@@ -55,14 +54,18 @@ class SVMHingeLoss(ClassifierLoss):
 
         loss = None
         # ====== YOUR CODE: ======
-        loss_matrix = max(x_scores - x_scores[:, y].view(-1, 1) + self.delta, 0)
-        loss_matrix[:, y] *= 0  # make sure to disregard the corrct class
-        loss = torch.mean(torch.sum(loss_matrix, dim=1))
+        # margin loss matrix before rounding up to 0.
+        loss_matrix = x_scores - x_scores.gather(1, y.view(-1, 1)) + self.delta
+        # non negative margin loss matrix.
+        loss_matrix.clamp_(0)
+
+        # could'nt find an easy way not to add delta to the correct predictions,
+        # so the easiest fix was to just subtract delta from the loss.
+        loss = torch.mean(torch.sum(loss_matrix, dim=1)) - self.delta
         # ========================
 
         # TODO: Save what you need for gradient calculation in self.grad_ctx
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
         # ========================
 
         return loss

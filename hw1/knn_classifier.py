@@ -131,7 +131,6 @@ def find_best_k(ds_train: Dataset, k_choices, num_folds):
     for i, k in enumerate(k_choices):
         model = KNNClassifier(k)
 
-        # TODO: Train model num_folds times with different train/val data.
         # Don't use any third-party libraries.
         # You can use your train/validation splitter from part 1 (even if
         # that means that it's not really k-fold CV since it will be a
