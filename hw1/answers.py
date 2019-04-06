@@ -10,8 +10,9 @@ math (delimited with $$).
 
 part2_q1 = r"""
 **Your answer:**
-No. In fact increasing k only helps sometimes in the low values, and then quickly makes the accuracy worse.
-That is because when using a value for k that is too large we are underfitting the model.
+No.  
+In fact increasing k only helps sometimes in the low values, and then quickly makes the accuracy worse.  
+That is because when using a value for k that is too large we are underfitting the model.  
 That happens because we are looking at too many points in the training set, even those that are too far away.
 
 """
