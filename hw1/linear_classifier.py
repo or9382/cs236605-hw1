@@ -145,7 +145,15 @@ class LinearClassifier(object):
         # The output shape should be (n_classes, C, H, W).
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        C, H, W = img_shape
+
+        if has_bias:
+            w_images = self.weights[:-1].clone()
+        else:
+            w_images = self.weights.clone()
+
+        w_images = w_images.t().contiguous().view(1, -1).view(-1, C, H, W)
+
         # ========================
 
         return w_images
