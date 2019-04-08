@@ -82,11 +82,11 @@ class SVMHingeLoss(ClassifierLoss):
 
         grad = None
         # ====== YOUR CODE: ======
-        pos_mask = torch.zeros_like(self.grad_ctx['m'])
-        pos_mask[self.grad_ctx['m'] > 0] = 1
-        pos_mask[range(pos_mask.shape[0]), self.grad_ctx['y']] = -torch.sum(pos_mask, dim=1)
+        g = torch.zeros_like(self.grad_ctx['m'])
+        g[self.grad_ctx['m'] > 0] = 1
+        g[range(g.shape[0]), self.grad_ctx['y']] = -torch.sum(g, dim=1)
 
-        grad = torch.mm(self.grad_ctx['x'].t(), pos_mask)/self.grad_ctx['x'].shape[0]
+        grad = torch.mm(self.grad_ctx['x'].t(), g)/self.grad_ctx['x'].shape[0]
         # ========================
 
         return grad
