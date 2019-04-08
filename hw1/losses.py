@@ -66,6 +66,9 @@ class SVMHingeLoss(ClassifierLoss):
 
         # TODO: Save what you need for gradient calculation in self.grad_ctx
         # ====== YOUR CODE: ======
+        self.grad_ctx['m'] = loss_matrix
+        self.grad_ctx['y'] = y
+        self.grad_ctx['x'] = x
         # ========================
 
         return loss
