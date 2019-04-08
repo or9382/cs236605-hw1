@@ -94,7 +94,38 @@ class LinearClassifier(object):
             average_loss = 0
 
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            # train on the training set while also calculating accuarcy and average loss
+            num_iters, total_samples = 0, 0
+            for data, target in dl_train:
+                classification, class_scores = self.predict(data)
+
+                total_correct += (classification == target).sum().item()
+                total_samples += classification.size()[0]
+
+                average_loss += loss_fn.loss(data, target, class_scores, classification)
+                num_iters += 1
+
+                grad = loss_fn.grad() + weight_decay * self.weights
+                self.weights -= learn_rate * grad
+            # update accuaracy and loss
+            train_res.accuracy.append(total_correct * 100.0 / total_samples)
+            train_res.loss.append(average_loss * 1.0 / num_iters)
+
+            # calculate accuarcy and average loss on the validation set
+            total_correct, average_loss = 0, 0
+            num_iters, total_samples = 0, 0
+            for data, target in dl_valid:
+                classification, class_scores = self.predict(data)
+
+                total_correct += (classification == target).sum().item()
+                total_samples += classification.size()[0]
+
+                average_loss += loss_fn.loss(data, target, class_scores, classification)
+                num_iters += 1
+
+            valid_res.accuracy.append(total_correct * 100.0 / total_samples)
+            valid_res.loss.append(average_loss * 1.0 / num_iters)
+
             # ========================
             print('.', end='')
 
