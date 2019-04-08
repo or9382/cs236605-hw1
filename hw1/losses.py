@@ -56,12 +56,13 @@ class SVMHingeLoss(ClassifierLoss):
         # ====== YOUR CODE: ======
         # margin loss matrix before rounding up to 0.
         loss_matrix = x_scores - x_scores.gather(1, y.view(-1, 1)) + self.delta
+        loss_matrix[range(loss_matrix.shape[0]), y] = 0
         # non negative margin loss matrix.
         loss_matrix.clamp_(0)
 
         # could'nt find an easy way not to add delta to the correct predictions,
         # so the easiest fix was to just subtract delta from the loss.
-        loss = torch.mean(torch.sum(loss_matrix, dim=1)) - self.delta
+        loss = torch.mean(torch.sum(loss_matrix, dim=1))
         # ========================
 
         # TODO: Save what you need for gradient calculation in self.grad_ctx
@@ -81,7 +82,11 @@ class SVMHingeLoss(ClassifierLoss):
 
         grad = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        pos_mask = torch.zeros_like(self.grad_ctx['m'])
+        pos_mask[self.grad_ctx['m'] > 0] = 1
+        pos_mask[range(pos_mask.shape[0]), self.grad_ctx['y']] = -torch.sum(pos_mask, dim=1)
+
+        grad = torch.mm(self.grad_ctx['x'].t(), pos_mask)/self.grad_ctx['x'].shape[0]
         # ========================
 
         return grad
