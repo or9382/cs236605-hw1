@@ -30,7 +30,7 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         y_pred = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        y_pred = (X @ self.weights_).reshape((-1))
         # ========================
 
         return y_pred
@@ -48,7 +48,7 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         w_opt = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        w_opt = np.linalg.inv(X.T @ X) @ (X.T @ y.reshape((-1, 1)))
         # ========================
 
         self.weights_ = w_opt
@@ -74,7 +74,11 @@ class BiasTrickTransformer(BaseEstimator, TransformerMixin):
 
         xb = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        if len(X.shape) > 1:
+            xb = np.hstack((np.ones((X.shape[0], 1)), X))
+        else:
+            xb = np.hstack((np.ones(1), X))
+
         # ========================
 
         return xb
@@ -136,7 +140,24 @@ def top_correlated_features(df: DataFrame, target_feature, n=5):
     # TODO: Calculate correlations with target and sort features by it
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    t_column = df.loc[:, target_feature].values.copy()
+    f_vals = df.loc[:, df.columns != target_feature].values.copy()
+    # print(t_column.values)
+    # print(f_vals.values)
+
+    t_column -= np.mean(t_column)
+    f_vals -= np.mean(f_vals, axis=0)
+
+    f_vars = np.sqrt(np.sum(np.power(f_vals, 2), axis=0))
+    t_var = np.linalg.norm(t_column)
+
+    cov = f_vals.T @ t_column
+
+    roh = cov/(f_vars * t_var)
+
+    top_indices = (np.abs(roh)).argsort()[-n:][::-1]
+    top_n_features = df.columns[top_indices]
+    top_n_corr = roh[top_indices]
     # ========================
 
     return top_n_features, top_n_corr
