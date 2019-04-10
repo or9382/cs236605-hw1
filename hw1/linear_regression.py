@@ -48,7 +48,9 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         w_opt = None
         # ====== YOUR CODE: ======
-        w_opt = np.linalg.inv(X.T @ X + self.reg_lambda * np.eye(X.shape[1], X.shape[1]))
+        reg = self.reg_lambda * (np.eye(X.shape[1], X.shape[1]))
+        reg[0, 0] = 0
+        w_opt = np.linalg.inv(X.T @ X + X.shape[0] * reg)
         w_opt = w_opt @ (X.T @ y.reshape((-1, 1)))
         # ========================
 
