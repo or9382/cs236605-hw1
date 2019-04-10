@@ -5,6 +5,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from pandas import DataFrame
 from sklearn.utils import check_array
 from sklearn.utils.validation import check_is_fitted, check_X_y
+from sklearn.model_selection import KFold, ParameterGrid
 
 
 class LinearRegressor(BaseEstimator, RegressorMixin):
@@ -91,13 +92,14 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
     """
     Generates custom features for the Boston dataset.
     """
-    def __init__(self, degree=2):
+
+    def __init__(self, degree=3):
         self.degree = degree
 
         # TODO: Your custom initialization, if needed
         # Add any hyperparameters you need and save them as above
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+
         # ========================
 
     def fit(self, X, y=None):
@@ -119,7 +121,18 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
 
         X_transformed = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        new_features = X[:, [0, 6, 7, 12]].copy()
+        new_features[:, 0] = 1.0/np.power(new_features[:, 0], 2)
+        new_features[:, 1] = np.log(100 - new_features[:, 1])
+        new_features[:, 2] = np.log(new_features[:, 2])
+        new_features[:, 3] = np.power(np.e, -new_features[:, 3])
+
+        X_transformed = np.hstack((X, new_features))
+
+        poly = PolynomialFeatures(self.degree)
+
+        X_transformed = poly.fit_transform(X_transformed)
+
         # ========================
 
         return X_transformed
@@ -156,7 +169,7 @@ def top_correlated_features(df: DataFrame, target_feature, n=5):
 
     cov = f_vals.T @ t_column
 
-    roh = cov/(f_vars * t_var)
+    roh = cov / (f_vars * t_var)
 
     top_indices = (np.abs(roh)).argsort()[-n:][::-1]
     top_n_features = df.columns[top_indices]
@@ -194,7 +207,46 @@ def cv_best_hyperparams(model: BaseEstimator, X, y, k_folds,
     # - You can use MSE or R^2 as a score.
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    params = {'linearregressor__reg_lambda': lambda_range, 'bostonfeaturestransformer__degree': degree_range}
+    kf = KFold(n_splits=k_folds)
+    best_params = ParameterGrid(params)[0]
+    best_mse = np.inf
+    best_r_2 = 0.0
+
+    for p_dict in ParameterGrid(params):
+        cur_acc = 0.0
+        curr_r_2 = 0.0
+        model.set_params(**p_dict)
+        for train_index, test_index in kf.split(X):
+            model.fit(X[train_index], y=y[train_index])
+            mse, rsq = evaluate_accuracy(y[test_index], model.predict(X[test_index]))
+            cur_acc += mse
+            curr_r_2 += rsq
+
+        cur_acc /= k_folds
+        curr_r_2 /= k_folds
+
+        if curr_r_2 > best_r_2:
+            best_r_2 = curr_r_2
+            best_params = p_dict
+
+        # if cur_acc < best_mse:
+        #     best_mse = cur_acc
+        #     best_params = p_dict
+
     # ========================
 
     return best_params
+
+
+def evaluate_accuracy(y: np.ndarray, y_pred: np.ndarray):
+    """
+    Calculates mean squared error (MSE) and coefficient of determination (R-squared).
+    :param y: Target values.
+    :param y_pred: Predicted values.
+    :return: A tuple containing the MSE and R-squared values.
+    """
+    mse = np.mean((y - y_pred) ** 2)
+    rsq = 1 - mse / np.var(y)
+    return mse.item(), rsq.item()
+
