@@ -41,7 +41,7 @@ so that if for most inputs the template they are the closest to should be the on
 2) This is different from KNN because while in KNN we save *every* input and try to find the k nearest ones,  
 here we learn and save a template for each class so that with KNN using k=1 we'll have the best accuracy.  
 Basically instead of remembering every sample we try to create a point for each class so that  
-each class will be best represented by it's point and save them instead.
+each class will be best represented by it's point and use them instead.
 """
 
 part3_q3 = r"""
