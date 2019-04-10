@@ -105,8 +105,10 @@ class LinearClassifier(object):
                 average_loss += loss_fn.loss(data, target, class_scores, classification)
                 num_iters += 1
 
+                # TODO: maybe weight decay shouldn't be multiplied by the learning rate?
                 grad = loss_fn.grad() + weight_decay * self.weights
                 self.weights -= learn_rate * grad
+
             # update accuaracy and loss
             train_res.accuracy.append(total_correct * 100.0 / total_samples)
             train_res.loss.append(average_loss * 1.0 / num_iters)
