@@ -35,21 +35,13 @@ arbitrarily as long as lambda is tuned correctly with said arbitrary value.
 
 part3_q2 = r"""
 **Your answer:**
-1) We interpret what the model is actually learning as
-<INSERT ANSWER>
-
-2) This is different from KNN because
-<INSERT ANSWER>
-
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+1) We can interpret what the model is actually learning as trying to find a template for each class  
+so that if for most inputs the template they are the closest to should be the one for their correct class.   
+  
+2) This is different from KNN because while in KNN we save *every* input and try to find the k nearest ones,  
+here we learn and save a template for each class so that with KNN using k=1 we'll have the best accuracy.  
+Basically instead of remembering every sample we try to create a point for each class so that  
+each class will be best represented by it's point and save them instead.
 """
 
 part3_q3 = r"""
