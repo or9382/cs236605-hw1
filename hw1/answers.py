@@ -23,19 +23,14 @@ That happens because we are looking at too many points in the training set, even
 
 part3_q1 = r"""
 **Your answer:**
-The choice of Delta > 0 is arbitrary for the SVM loss L(W) because
-<INSERT ANSWER>
-
-
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
+The choice of delta > 0 is arbitrary for the SVM loss L(W) because  
+delta controls the same trade-off as lambda,  
+the bigger the margin between answers needs to be the weights can grow  
+in order to meet that expectation without changing the actual relations between the scores,  
+and the same goes for a smaller margin and the weights shrinking.  
+This means that while delta and lambda are supposedly different hyper-parameters  
+because they both control the same trade-off (weights' size to accuracy) delta can be chosen  
+arbitrarily as long as lambda is tuned correctly with said arbitrary value.
 """
 
 part3_q2 = r"""
