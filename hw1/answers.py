@@ -23,7 +23,7 @@ That happens because we are looking at too many points in the training set, even
 
 part3_q1 = r"""
 **Your answer:**
-The choice of $\Delta > 0$ is arbitrary for the SVM loss $L(W)$ because
+The choice of Delta > 0 is arbitrary for the SVM loss L(W) because
 <INSERT ANSWER>
 
 
