@@ -27,8 +27,6 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
         X = check_array(X)
         check_is_fitted(self, 'weights_')
 
-        # TODO: Calculate the model prediction, y_pred
-
         y_pred = None
         # ====== YOUR CODE: ======
         y_pred = (X @ self.weights_).reshape((-1))
@@ -44,7 +42,6 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
         """
         X, y = check_X_y(X, y)
 
-        # TODO: Calculate the optimal weights using the closed-form solution
         # Use only numpy functions.
 
         w_opt = None
@@ -74,15 +71,12 @@ class BiasTrickTransformer(BaseEstimator, TransformerMixin):
         """
         X = check_array(X)
 
-        # TODO: Add bias term to X as the first feature.
-
         xb = None
         # ====== YOUR CODE: ======
         if len(X.shape) > 1:
             xb = np.hstack((np.ones((X.shape[0], 1)), X))
         else:
             xb = np.hstack((np.ones(1), X))
-
         # ========================
 
         return xb
@@ -96,10 +90,8 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
     def __init__(self, degree=3):
         self.degree = degree
 
-        # TODO: Your custom initialization, if needed
         # Add any hyperparameters you need and save them as above
         # ====== YOUR CODE: ======
-
         # ========================
 
     def fit(self, X, y=None):
@@ -114,7 +106,6 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
         X = check_array(X)
         # check_is_fitted(self, ['n_features_', 'n_output_features_'])
 
-        # TODO: Transform the features of X into new features in X_transformed
         # Note: You can count on the order of features in the Boston dataset
         # (this class is "Boston-specific"). For example X[:,1] is the second
         # feature ('ZN').
@@ -122,7 +113,7 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
         X_transformed = None
         # ====== YOUR CODE: ======
         new_features = X[:, [0, 6, 7, 12]].copy()
-        new_features[:, 0] = 1.0/np.power(new_features[:, 0], 2)
+        new_features[:, 0] = 1.0 / np.power(new_features[:, 0], 2)
         new_features[:, 1] = np.log(100 - new_features[:, 1])
         new_features[:, 2] = np.log(new_features[:, 2])
         new_features[:, 3] = np.power(np.e, -new_features[:, 3])
@@ -153,25 +144,21 @@ def top_correlated_features(df: DataFrame, target_feature, n=5):
         correlated) feature is first.
     """
 
-    # TODO: Calculate correlations with target and sort features by it
-
     # ====== YOUR CODE: ======
-    t_column = df.loc[:, target_feature].values.copy()
-    f_vals = df.loc[:, df.columns != target_feature].values.copy()
-    # print(t_column.values)
-    # print(f_vals.values)
+    target_vals = df.loc[:, target_feature].values.copy()
+    feat_vals = df.loc[:, df.columns != target_feature].values.copy()
 
-    t_column -= np.mean(t_column)
-    f_vals -= np.mean(f_vals, axis=0)
+    target_vals -= np.mean(target_vals)
+    feat_vals -= np.mean(feat_vals, axis=0)
 
-    f_vars = np.sqrt(np.sum(np.power(f_vals, 2), axis=0))
-    t_var = np.linalg.norm(t_column)
+    feat_std = np.sqrt(np.sum(np.power(feat_vals, 2), axis=0))
+    taret_std = np.linalg.norm(target_vals)
 
-    cov = f_vals.T @ t_column
+    cov = (feat_vals.T @ target_vals).reshape(-1)
 
-    roh = cov / (f_vars * t_var)
+    roh = cov / (feat_std * taret_std)
 
-    top_indices = (np.abs(roh)).argsort()[-n:][::-1]
+    top_indices = np.abs(roh).argsort()[-n:][::-1]
     top_n_features = df.columns[top_indices]
     top_n_corr = roh[top_indices]
     # ========================
@@ -193,7 +180,6 @@ def cv_best_hyperparams(model: BaseEstimator, X, y, k_folds,
         with some of the keys as returned by model.get_params()
     """
 
-    # TODO: Do K-fold cross validation to find the best hyperparameters
     #
     # Notes:
     # - You can implement it yourself or use the built in sklearn utilities
@@ -207,7 +193,9 @@ def cv_best_hyperparams(model: BaseEstimator, X, y, k_folds,
     # - You can use MSE or R^2 as a score.
 
     # ====== YOUR CODE: ======
-    params = {'linearregressor__reg_lambda': lambda_range, 'bostonfeaturestransformer__degree': degree_range}
+    params = {'linearregressor__reg_lambda': lambda_range,
+              'bostonfeaturestransformer__degree': degree_range}
+
     kf = KFold(n_splits=k_folds)
     best_params = ParameterGrid(params)[0]
     best_mse = np.inf
@@ -229,11 +217,6 @@ def cv_best_hyperparams(model: BaseEstimator, X, y, k_folds,
         if curr_r_2 > best_r_2:
             best_r_2 = curr_r_2
             best_params = p_dict
-
-        # if cur_acc < best_mse:
-        #     best_mse = cur_acc
-        #     best_params = p_dict
-
     # ========================
 
     return best_params

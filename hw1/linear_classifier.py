@@ -79,7 +79,6 @@ class LinearClassifier(object):
 
         print('Training', end='')
         for epoch_idx in range(max_epochs):
-            # TODO: Implement model training loop.
             # At each epoch, evaluate the model on the entire training set
             # (batch by batch) and update the weights.
             # Each epoch, also evaluate on the validation set.
@@ -100,20 +99,19 @@ class LinearClassifier(object):
                 classification, class_scores = self.predict(data)
 
                 total_correct += (classification == target).sum().item()
-                total_samples += classification.size()[0]
+                total_samples += classification.size(0)
 
                 average_loss += loss_fn.loss(data, target, class_scores, classification)
                 num_iters += 1
 
-                # TODO: maybe weight decay shouldn't be multiplied by the learning rate?
                 grad = loss_fn.grad() + weight_decay * self.weights
                 self.weights -= learn_rate * grad
 
-            # update accuaracy and loss
+            # update accuracy and loss
             train_res.accuracy.append(total_correct * 100.0 / total_samples)
             train_res.loss.append(average_loss * 1.0 / num_iters)
 
-            # calculate accuarcy and average loss on the validation set
+            # calculate accuracy and average loss on the validation set
             total_correct, average_loss = 0, 0
             num_iters, total_samples = 0, 0
             for data, target in dl_valid:
@@ -143,12 +141,11 @@ class LinearClassifier(object):
         :return: Tensor of shape (n_classes, C, H, W).
         """
 
-        # TODO: Convert the weights matrix into a tensor of images.
         # The output shape should be (n_classes, C, H, W).
 
         # ====== YOUR CODE: ======
         w_images = (self.weights[:-1] if has_bias else self.weights).clone()
-        w_images = w_images.t().contiguous().view(1, -1).view(-1, *img_shape)
+        w_images = w_images.t().contiguous().view(-1, *img_shape)
         # ========================
 
         return w_images
